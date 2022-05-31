@@ -16,6 +16,12 @@ export default class KeyPair {
         this.N = p * q;
         this.L = (p - 1n) * (q - 1n);
         this.d = this.modInverse(e, this.L);
+        
+        console.log(this.bigIntToBase64(0b0100110101100001n));
+    }
+    
+    getN() {
+        return this.bigIntToBase64(this.N);
     }
     
     encrypt(message: string) {
@@ -75,5 +81,20 @@ export default class KeyPair {
         }
 
         return x;
+    }
+    
+    private bigIntToBase64(input: bigint): string {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        let out = "";
+        
+        //TODO padding
+        
+        while (input > 0n) {
+            let value = input & 0b111111n;
+            out = chars[Number(value)] + out;
+            input = input >> 6n;
+        }
+        
+        return out;
     }
 }
