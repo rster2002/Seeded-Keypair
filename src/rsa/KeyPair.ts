@@ -1,4 +1,6 @@
 import safePow from "./safePow";
+import BinaryHelper from "../BinaryHelper";
+import Asn1Encoder from "../Asn1Encoder";
 
 export default class KeyPair {
     private readonly p: bigint;
@@ -16,45 +18,25 @@ export default class KeyPair {
         this.N = p * q;
         this.L = (p - 1n) * (q - 1n);
         this.d = this.modInverse(e, this.L);
-        
-        console.log(this.bigIntToBase64(0b0100110101100001n));
-    }
-    
-    getN() {
-        return this.bigIntToBase64(this.N);
     }
     
     encrypt(message: string) {
-        return safePow(this.stringToBigInt(message), this.e, this.N);
+        return safePow(BinaryHelper.stringToBigInt(message), this.e, this.N);
     }
     
     decrypt(message: bigint) {
-        return this.bigIntToString(safePow(message, this.d, this.N));
+        return BinaryHelper.bigIntToString(safePow(message, this.d, this.N));
     }
     
-    private stringToBigInt(input: string): bigint {
-        let chars = input.split("");
-        let bigInt = 0n;
+    getPublic() {
+        let encoder = new Asn1Encoder();
         
-        for (let char of chars) {
-            let charCode = char.charCodeAt(0);
-
-            bigInt = bigInt << 8n;
-            bigInt = bigInt | BigInt(charCode);
-        }
-        
-        return bigInt;
-    }
-    
-    private bigIntToString(input: bigint): string {
-        let string = "";
-        
-        while (input !== 0n) {
-            string = String.fromCharCode(Number(input & 255n)) + string;
-            input = input >> 8n;
-        }
-        
-        return string;
+        return BinaryHelper.bigIntToBase64(
+            encoder.sequence(
+                encoder.unsignedInteger(this.N),
+                encoder.unsignedInteger(this.e)
+            )
+        );
     }
     
     private modInverse(a: bigint, n: bigint): bigint {
@@ -81,20 +63,5 @@ export default class KeyPair {
         }
 
         return x;
-    }
-    
-    private bigIntToBase64(input: bigint): string {
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-        let out = "";
-        
-        //TODO padding
-        
-        while (input > 0n) {
-            let value = input & 0b111111n;
-            out = chars[Number(value)] + out;
-            input = input >> 6n;
-        }
-        
-        return out;
     }
 }
