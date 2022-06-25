@@ -2,6 +2,14 @@
 
 Library for generating RSA keypair using a seed.
 
+## Installing
+
+Install this package using NPM:
+
+```bash
+npm install seeded-keypair
+```
+
 ## Usage
 
 ### Generating a seeded key
