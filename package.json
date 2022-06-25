@@ -1,6 +1,6 @@
 {
   "name": "seeded-keypair",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -20,7 +20,7 @@
     "url": "https://github.com/rster2002/Seeded-Keypair"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/rster2002/Seeded-Keypair/issues"
   },
