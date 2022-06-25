@@ -1,44 +1,48 @@
 import safePow from "./safePow";
 import BinaryHelper from "../BinaryHelper";
-import Asn1Encoder from "../Asn1Encoder";
+import PublicComponent from "./PublicComponent";
 
-export default class KeyPair {
+export default class KeyPair extends PublicComponent {
     private readonly p: bigint;
     private readonly q: bigint;
-    private readonly e: bigint;
-    private readonly N: bigint;
     private readonly L: bigint;
     private readonly d: bigint;
-    
+
     constructor(p: bigint, q: bigint, e: bigint) {
+        super(p * q, e)
+
         this.p = p;
         this.q = q;
-        this.e = e;
-        
-        this.N = p * q;
+
         this.L = (p - 1n) * (q - 1n);
         this.d = this.modInverse(e, this.L);
     }
-    
-    encrypt(message: string) {
-        return safePow(BinaryHelper.stringToBigInt(message), this.e, this.N);
+
+    extractPublicComponent(): PublicComponent {
+        return new PublicComponent(this.N, this.e);
     }
-    
-    decrypt(message: bigint) {
-        return BinaryHelper.bigIntToString(safePow(message, this.d, this.N));
+
+    decrypt(message: string) {
+        let chunks = message.split("$");
+        return chunks.map(chunk => {
+            let bigInt = BinaryHelper.base64toBigInt(chunk);
+            return BinaryHelper.bigIntToString(safePow(bigInt, this.d, this.N));
+        })
+            .join("")
     }
-    
-    getPublic() {
-        let encoder = new Asn1Encoder();
-        
-        return BinaryHelper.bigIntToBase64(
-            encoder.sequence(
-                encoder.unsignedInteger(this.N),
-                encoder.unsignedInteger(this.e)
-            )
-        );
+
+    sign(message: string): string {
+        let chunks = this.toChunks(message);
+
+        return chunks.map(chunk => {
+            let bitInt = BinaryHelper.stringToBigInt(chunk);
+            let signature = safePow(bitInt, this.d, this.N);
+
+            return BinaryHelper.bigIntToBase64(signature);
+        })
+            .join("$");
     }
-    
+
     private modInverse(a: bigint, n: bigint): bigint {
         let n0 = n;
         let y = 0n;
@@ -63,5 +67,21 @@ export default class KeyPair {
         }
 
         return x;
+    }
+
+    toString() {
+        return BinaryHelper.bigIntToBase64(this.p)
+            + "$" + BinaryHelper.bigIntToBase64(this.q)
+            + "$" + BinaryHelper.bigIntToBase64(this.e);
+    }
+
+    static fromString(string: string) {
+        let [p, q, e] = string.split("$");
+
+        return new KeyPair(
+            BinaryHelper.base64toBigInt(p),
+            BinaryHelper.base64toBigInt(q),
+            BinaryHelper.base64toBigInt(e)
+        );
     }
 }

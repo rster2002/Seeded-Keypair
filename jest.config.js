@@ -1,10 +1,10 @@
-export default {
+module.exports = {
     testEnvironment: "jsdom",
     moduleNameMapper: {
         "@/(.*)$": "<rootDir>/src/$1",
     },
     setupFiles: [
-        "./test/setup.js",
+        "./tests/setup.js",
     ],
     transformIgnorePatterns: [],
 }

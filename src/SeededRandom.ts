@@ -1,11 +1,11 @@
 export default class SeededRandom {
-    private currentValue: number;
-    
-    constructor(seed: number) {
+    private currentValue: bigint;
+
+    constructor(seed: bigint) {
         this.currentValue = seed;
     }
-    
+
     next() {
-        return this.currentValue = this.currentValue * 16807 % 2147483647;
+        return this.currentValue = this.currentValue * 16807n % 2147483647n;
     }
 }

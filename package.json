@@ -1,8 +1,13 @@
 {
-  "name": "typescript-esbuild",
+  "name": "seeded-keypair",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "package.json"
+  ],
   "scripts": {
     "dev": "concurrently npm:dev:*",
     "dev:server": "live-server ./www",

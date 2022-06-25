@@ -9,7 +9,7 @@ export default abstract class BinaryHelper {
 
         return string;
     }
-    
+
     static stringToBigInt(input: string): bigint {
         let chars = input.split("");
         let bigInt = 0n;
@@ -23,8 +23,12 @@ export default abstract class BinaryHelper {
 
         return bigInt;
     }
-    
+
     static bigIntToBase64(input: bigint): string {
         return btoa(BinaryHelper.bigIntToString(input));
+    }
+
+    static base64toBigInt(input: string) {
+        return BinaryHelper.stringToBigInt(atob(input));
     }
 }
