@@ -10,6 +10,6 @@ export default class SeededRSA extends RSAGenerator {
 
     async generateSeeded(seed: bigint) {
         this.randomGenerator = new SeededRandom(seed);
-        return super.generateKeys();
+        return super.generateKeypair();
     }
 }
