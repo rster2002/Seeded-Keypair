@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const options = {
-    entryPoints: ["./src/index.ts"],
+    entryPoints: ["./www/run.ts"],
     outfile: "./www/out.js",
     bundle: true,
     minify: false,

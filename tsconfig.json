@@ -16,7 +16,8 @@
     "rootDir": "src",
     "skipLibCheck": true,
     "traceResolution": false,
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
+    "target": "es2020"
   },
   "compileOnSave": false,
   "exclude": ["node_modules", "dist"],

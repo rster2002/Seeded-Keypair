@@ -40,17 +40,23 @@ export default abstract class RSAGenerator {
 
     private async generatePrime(length: number): Promise<bigint> {
         while (this.ensureKey) {
-            let randomBigint = this.randomBigintFromLength(length, 0b11n);
-            randomBigint = randomBigint | 1n;
+            let result = (() => {
+                let randomBigint = this.randomBigintFromLength(length, 0b11n);
+                randomBigint = randomBigint | 1n;
 
-            let result = this.findPrime(length, randomBigint);
+                let result = this.findPrime(length, randomBigint);
 
-            if (result !== 0n) {
+                if (result !== 0n) {
+                    return result;
+                }
+
+                if (!this.ensureKey) {
+                    throw new Error("No prime after K");
+                }
+            })();
+
+            if (result !== undefined) {
                 return result;
-            }
-
-            if (!this.ensureKey) {
-                throw new Error("No prime after K");
             }
         }
     }
@@ -75,11 +81,17 @@ export default abstract class RSAGenerator {
         let maxK = (n * Math.log(2)) / 2;
 
         for (let i = 0; i < maxK; i++) {
-            if (this.checkPrime(number)) {
-                return number;
-            }
+            let result = (() => {
+                if (this.checkPrime(number)) {
+                    return number;
+                }
 
-            number += 2n;
+                number += 2n;
+            })();
+
+            if (result !== undefined) {
+                return result;
+            }
         }
 
         return 0n;
@@ -108,8 +120,10 @@ export default abstract class RSAGenerator {
         let d = n - 1n;
 
         while ((d & 1n) === 0n) {
-            d >>= 1n;
-            ++s;
+            (() => {
+                d >>= 1n;
+                ++s;
+            })();
         }
 
         let base = 2n;
@@ -120,10 +134,16 @@ export default abstract class RSAGenerator {
         }
 
         for (let i = 0n; i <= s; i++) {
-            x = safePow(x, x, n);
+            let result = (() => {
+                x = safePow(x, x, n);
 
-            if (x === n - 1n) {
-                return true;
+                if (x === n - 1n) {
+                    return true;
+                }
+            })();
+
+            if (result !== undefined) {
+                return result;
             }
         }
 
